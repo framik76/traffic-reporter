@@ -1,0 +1,30 @@
+[
+  {
+    "ip_address": "203.0.113.42",
+    "request_count": 102,
+    "request_pct": 30.18,
+    "total_bytes": 309946,
+    "bytes_pct": 23.32
+  },
+  {
+    "ip_address": "198.51.100.17",
+    "request_count": 81,
+    "request_pct": 23.96,
+    "total_bytes": 253341,
+    "bytes_pct": 19.06
+  },
+  {
+    "ip_address": "172.16.254.3",
+    "request_count": 78,
+    "request_pct": 23.08,
+    "total_bytes": 259726,
+    "bytes_pct": 19.54
+  },
+  {
+    "ip_address": "192.0.2.88",
+    "request_count": 77,
+    "request_pct": 22.78,
+    "total_bytes": 505967,
+    "bytes_pct": 38.07
+  }
+]

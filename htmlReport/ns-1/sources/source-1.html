@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TrafficReporterApp</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">net.manenti.reporter</a>
+</div>
+
+<h1>Coverage Summary for Class: TrafficReporterApp (net.manenti.reporter)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TrafficReporterApp</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package net.manenti.reporter;
+&nbsp;
+&nbsp;import net.manenti.reporter.model.LogEntry;
+&nbsp;import net.manenti.reporter.model.OutputFormat;
+&nbsp;import net.manenti.reporter.parser.LogParser;
+&nbsp;import net.manenti.reporter.report.ReportGenerator;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.Paths;
+&nbsp;import java.util.List;
+&nbsp;import java.util.logging.Level;
+&nbsp;import java.util.logging.Logger;
+&nbsp;
+&nbsp;/**
+&nbsp; * Entry point for the Traffic Report Generator.
+&nbsp; *
+&nbsp; * &lt;pre&gt;
+&nbsp; * Usage:
+&nbsp; *   java -jar traffic-reporter.jar [logFile] [reportFile] [format]
+&nbsp; *
+&nbsp; * Arguments (all optional, with defaults):
+&nbsp; *   logFile    – path to the source log file  (default: logfiles/requests.log)
+&nbsp; *   reportFile – path to the output report    (default: reports/ipaddr.csv or ipaddr.json)
+&nbsp; *   format     – output format: csv | json    (default: csv)
+&nbsp; *
+&nbsp; * Examples:
+&nbsp; *   java -jar traffic-reporter.jar
+&nbsp; *   java -jar traffic-reporter.jar logfiles/requests.log reports/ipaddr.csv csv
+&nbsp; *   java -jar traffic-reporter.jar logfiles/requests.log reports/ipaddr.json json
+&nbsp; * &lt;/pre&gt;
+&nbsp; */
+<b class="nc">&nbsp;public class TrafficReporterApp {</b>
+&nbsp;
+<b class="nc">&nbsp;    private static final Logger LOG = Logger.getLogger(TrafficReporterApp.class.getName());</b>
+&nbsp;
+&nbsp;    private static final String DEFAULT_LOG_PATH    = &quot;logfiles/requests.log&quot;;
+&nbsp;    private static final String DEFAULT_REPORT_DIR  = &quot;reports/&quot;;
+&nbsp;    private static final String DEFAULT_REPORT_NAME = &quot;ipaddr&quot;;
+&nbsp;
+&nbsp;    public static void main(String[] args) {
+&nbsp;        // --- Resolve arguments ---
+<b class="nc">&nbsp;        OutputFormat format = args.length &gt;= 3</b>
+<b class="nc">&nbsp;            ? OutputFormat.fromString(args[2])</b>
+<b class="nc">&nbsp;            : OutputFormat.CSV;</b>
+&nbsp;
+<b class="nc">&nbsp;        Path logPath = Paths.get(args.length &gt;= 1 ? args[0] : DEFAULT_LOG_PATH);</b>
+&nbsp;
+&nbsp;        Path reportPath;
+<b class="nc">&nbsp;        if (args.length &gt;= 2) {</b>
+<b class="nc">&nbsp;            reportPath = Paths.get(args[1]);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            String extension = format == OutputFormat.JSON ? &quot;.json&quot; : &quot;.csv&quot;;</b>
+<b class="nc">&nbsp;            reportPath = Paths.get(DEFAULT_REPORT_DIR + DEFAULT_REPORT_NAME + extension);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        LOG.info(&quot;Log source : &quot; + logPath.toAbsolutePath());</b>
+<b class="nc">&nbsp;        LOG.info(&quot;Report dest: &quot; + reportPath.toAbsolutePath());</b>
+<b class="nc">&nbsp;        LOG.info(&quot;Format     : &quot; + format);</b>
+&nbsp;
+&nbsp;        // --- Parse ---
+<b class="nc">&nbsp;        LogParser parser = new LogParser();</b>
+&nbsp;        List&lt;LogEntry&gt; entries;
+&nbsp;        try {
+<b class="nc">&nbsp;            entries = parser.parse(logPath);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            LOG.log(Level.SEVERE, &quot;Failed to read log file: &quot; + logPath, e);</b>
+<b class="nc">&nbsp;            System.exit(1);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (entries.isEmpty()) {</b>
+<b class="nc">&nbsp;            LOG.warning(&quot;No valid OK-status entries found in &quot; + logPath + &quot;. Report will be empty.&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // --- Generate report ---
+<b class="nc">&nbsp;        ReportGenerator generator = new ReportGenerator();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            generator.generate(entries, reportPath, format);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            LOG.log(Level.SEVERE, &quot;Failed to write report: &quot; + reportPath, e);</b>
+<b class="nc">&nbsp;            System.exit(2);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        LOG.info(&quot;Report written successfully to &quot; + reportPath.toAbsolutePath());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-12 11:16</div>
+</div>
+</body>
+</html>
